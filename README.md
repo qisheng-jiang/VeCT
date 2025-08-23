@@ -46,19 +46,12 @@ The repository is organized as follows:
 
 To reproduce the t-test results for AVX-512 memory access:
 
-1.  Navigate to the t-test directory:
+```bash
+cd t-test
+bash t-test.sh
+```
 
-    ```bash
-    cd t-test
-    ```
-
-2.  Run the analysis script:
-
-    ```bash
-    bash t-test.sh
-    ```
-
-    The results will be generated in the `data/` subdirectory.
+The results will be generated in the `data/` subdirectory.
 
 ### Running the Benchmarks
 

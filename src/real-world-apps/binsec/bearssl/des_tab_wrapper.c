@@ -1,0 +1,44 @@
+#include "../__libsym__/sym.h"
+#include "inc/bearssl.h"
+#include <stdint.h>
+
+#include "../../../include/exp_setup.h"
+
+#define KEY_LEN 384     /* uint32_t skey[96]; => 96 * 4 */
+#define N_ROUND 3
+#define BLOCK_SIZE br_des_tab_BLOCK_SIZE  /* 8 bytes */
+#define IV_LEN br_des_tab_BLOCK_SIZE
+#define DATA_LEN TEST_DATA_SIZE   /* Must be a multiple of block size */
+
+int main(int argc, char *argv[]){
+  br_des_tab_cbcenc_keys ctx = {0};
+  ctx.vtable = &br_des_tab_cbcenc_vtable;
+  ctx.num_rounds = N_ROUND;
+  uint8_t iv[IV_LEN] = {0};
+  uint8_t data[DATA_LEN] = {0};
+
+  HIGH_INPUT(KEY_LEN, ctx.skey);
+  HIGH_INPUT(DATA_LEN, data);
+
+#if END_TO_END != 1
+  uint64_t start, end;
+  uint64_t cpu_time_used = 0;
+  int temp = 0;
+  for (uint64_t i = 0; i < WARMUP_COUNT + REPEAT_COUNT; i++) {
+    clean_cache(data, DATA_LEN * sizeof(uint8_t));
+    clean_cache(ctx.skey, KEY_LEN * sizeof(uint8_t));
+    _mm_mfence();
+    start = __rdtscp(&temp);
+#endif
+    br_des_tab_cbcenc_run(&ctx, iv, data, (size_t) DATA_LEN);
+#if END_TO_END != 1
+  _mm_mfence();
+    end = __rdtscp(&temp);
+    cpu_time_used += ( i < WARMUP_COUNT ? 0 : (end - start));
+  }
+  fprintf(stderr, "Elapsed time in %s: %lu\n", __FILE__, cpu_time_used);
+#endif
+
+  write(1, data, DATA_LEN);
+  return 0;
+}

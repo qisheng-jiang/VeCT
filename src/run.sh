@@ -34,4 +34,4 @@ clang -no-pie -o $FILE_NAME.out $FILE_NAME.final.o
 # -dfl-avx512=1 -dfl-avx2=1 in constantine 
 # #define DFL_STRIDE (64uL) in dfl.c 
 
-../retdec/bin/retdec-decompiler $FILE_NAME.out > /dev/null
+# ../retdec/bin/retdec-decompiler $FILE_NAME.out > /dev/null

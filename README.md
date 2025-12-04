@@ -23,7 +23,7 @@ The repository is organized as follows:
       - **`./src/microbenchmark/`**: Contains all code, scripts, and data related to the microbenchmark experiments used to evaluate the fine-grained performance of VeCT's transformations.
       - **`./src/real-world-apps/`**: Contains the versions of real-world applications (e.g., cryptographic libraries, data processing utilities) that were tested and evaluated with VeCT.
 
-  - **`./t-test/`**: This directory contains the necessary scripts, measurement data, and analysis code to reproduce our statistical leakage assessment (t-test) concerning the constant-time guarantees for AVX-512 memory access patterns.
+  - **`./t-test/`**: This directory contains the necessary scripts, measurement data, and analysis code to reproduce our statistical side-channel assessment (t-test) concerning the constant-time guarantees for AVX-512 memory access patterns.
 
 ## Getting Started
 
@@ -42,7 +42,7 @@ The repository is organized as follows:
 
 ## How to Run Experiments
 
-### Running the Leakage Assessment (t-test)
+### Running the side-channel Assessment (t-test)
 
 To reproduce the t-test results for AVX-512 memory access:
 

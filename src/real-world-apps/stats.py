@@ -81,9 +81,8 @@ def main(inputs, output_csv):
 
 if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    file_version = '8-5'
     file_dirs = ['binsec', 'issta2018-benchmarks-wu', 'pycrypto']
-    input_files = [os.path.join(script_dir, d, 'output', f'run_test-{file_version}.log') for d in file_dirs]
-    output_csv = os.path.join(script_dir, f'stats_summary_{file_version}.csv')
+    input_files = [os.path.join(script_dir, d, 'output', f'run_test.log') for d in file_dirs]
+    output_csv = os.path.join(script_dir, f'stats_summary.csv')
     main(input_files, output_csv)
 

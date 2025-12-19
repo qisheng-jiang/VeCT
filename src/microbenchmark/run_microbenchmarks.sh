@@ -7,30 +7,15 @@ docker_name=constantine
 FILE=test/vector-perf.c
 FILE_NAME=${FILE::-2}
 
-output_dir=$FILE_NAME-vector
+output_dir=$FILE_NAME-output
 mkdir -p $output_dir
-version=linear-4
-output_file=$output_dir/$version.log
-results_file=$output_dir/$version.res
-
-[ -e $output_file ] && mv -f $output_file $output_file.bk
-[ -e $results_file ] && mv -f $results_file $results_file.bk
-
-docker restart $docker_name
-
-docker exec $docker_name bash -c \
-"cd /root/constantine/src && \
-. ./setup.sh && \
-cd lib && rm ./dfl/dfl.o && make install -j10 && \
-cd /root/constantine/src && \
-cd passes && rm ./dfl/dfl.so ./dfl/dfl.o && make install -j10" 
-
 
 function run_test {
     local test_type=$1
     local array_size=$2
     local update_size=$3
     local is_load=$4
+    local output_file=$5
 
     echo -e "#define TEST_TYPE $test_type\n#define ARRAY_SIZE $array_size\n#define UPDATE_SIZE $update_size\n#define IS_LOAD $is_load" > $FILE_NAME.h
     rm -f $FILE_NAME.out $FILE_NAME.base.bc $FILE_NAME.dfl.bc $FILE_NAME.final.bc
@@ -49,41 +34,70 @@ function run_test {
 
     for repeat in {1..10}
     do
-    $FILE_NAME.out <./apps/binsec/random_input.txt 2>> $output_file
+    $FILE_NAME.out <./real-world-apps/random_input.txt 2>> $output_file
     done
     
     sleep 0.1
 
 }
 
-test_type=uint32_t
+for vectorize in "false" "true" 
+do 
+for stride_size in 64 4
+do 
 
-for is_load in 0 1
-do 
-for array_size in 100 1000 10000 100000 1000000
-do 
-    for update_size in 2 4 6 8 10 12 14 15
+echo -e "#define DFL_STRIDE (${stride_size}uL)\n#define DFL_VECTORIZE (${vectorize})\n#define DFL_READONLY (0)" > ../include/conf.h
+
+output_file=$output_dir/$vectorize-$stride_size.log
+results_file=$output_dir/$vectorize-$stride_size.res
+
+[ -e $output_file ] && mv -f $output_file $output_file.bk
+[ -e $results_file ] && mv -f $results_file $results_file.bk
+
+docker restart $docker_name
+
+docker exec $docker_name bash -c \
+"cd /root/constantine/src && \
+. ./setup.sh && \
+cd lib && rm ./dfl/dfl.o && make install -j10 && \
+cd /root/constantine/src && \
+cd passes && rm ./dfl/dfl.so ./dfl/dfl.o && make install -j10" 
+
+
+    update_size=6
+    for test_type in uint32_t uint64_t
     do 
-        run_test $test_type $array_size $update_size $is_load
-    done
-done
-done
-
-
-test_type=uint64_t
-
-for is_load in 0 1
-do 
-for array_size in 100 1000 10000 100000 1000000
-do 
-    for update_size in 2 4 6 7
+    for is_load in 0 1
     do 
-        run_test $test_type $array_size $update_size $is_load
+        for array_size in 10 100 1000 10000 
+        do 
+            run_test $test_type $array_size $update_size $is_load $output_file
+        done
     done
+    done
+
+
+    array_size=1000
+
+    test_type=uint32_t 
+    for is_load in 0 1
+    do 
+        for update_size in 2 4 8 10 12 14 15 
+        do 
+            run_test $test_type $array_size $update_size $is_load $output_file
+        done
+    done
+    test_type=uint64_t 
+    for is_load in 0 1
+    do 
+        for update_size in 2 4 7 
+        do 
+            run_test $test_type $array_size $update_size $is_load $output_file
+        done
+    done
+
+    python3 test/stats.py $output_file > $results_file
+    echo "Output log saved to $output_file; Results saved to $results_file"
+
 done
 done
-
-python3 test/stats.py $output_file > $results_file
-
-echo "Output log saved to $output_file"
-echo "Results saved to $results_file"

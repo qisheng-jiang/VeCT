@@ -8,7 +8,7 @@ dir_name=$(basename "$PWD")
 
 output_dir=output
 mkdir -p $output_dir
-output_file=$output_dir/run_test-8-11.log
+output_file=$output_dir/run_test.log
 [ -e $output_file ] && mv -f $output_file $output_file.bk
 stats_file=$output_file.stats.csv
 [ -e $stats_file ] && mv -f $stats_file $stats_file.bk
@@ -167,10 +167,7 @@ done
 # READ ONLY + NO PRE CFL 
 # ======================
 
-project_list=(
-    AES Blowfish CAST  
-    # XOR
-    )
+project_list=(AES Blowfish CAST)
 
 for stride_size in 64 4
 do 

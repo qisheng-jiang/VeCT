@@ -1,14 +1,14 @@
 #!/bin/bash 
 
-set -e
-set -x
+# set -e
+# set -x
 
 docker_name=constantine
 dir_name=$(basename "$PWD")
 
 output_dir=output
 mkdir -p $output_dir
-output_file=$output_dir/run_test-8-11-4.log
+output_file=$output_dir/run_test.log
 [ -e $output_file ] && mv -f $output_file $output_file.bk
 stats_file=$output_file.stats.csv
 [ -e $stats_file ] && mv -f $stats_file $stats_file.bk
@@ -154,7 +154,9 @@ done
 project_list=(
     appliedCryp/des 
     ghostrider/dijkstra ghostrider/histogram 
-    ghostrider/permutation ghostrider/heappop
+    ghostrider/rsort 
+    ghostrider/permutation 
+    ghostrider/heappop
     )
 
 for stride_size in 64 4
@@ -178,12 +180,8 @@ done
 # ======================
 
 project_list=(
-    # appliedCryp/3way
     chronos/aes   chronos/des   chronos/des3  chronos/anubis  chronos/cast5  chronos/cast6  chronos/fcrypt chronos/khazad 
-    Felics/PRESENT 
-    # Felics/LED 
     ghostrider/binsearch 
-    # ghostrider/findmax
     libg/camellia libg/des  libg/seed  libg/twofish
     supercop/aes_core  supercop/cast-ssl
     )
@@ -216,12 +214,8 @@ done
 # ======================
 
 project_list=(
-    # appliedCryp/3way
     chronos/aes   chronos/des   chronos/des3  chronos/anubis  chronos/cast5  chronos/cast6  chronos/fcrypt chronos/khazad 
-    Felics/PRESENT 
-    # Felics/LED 
     ghostrider/binsearch 
-    # ghostrider/findmax
     libg/camellia libg/des  libg/seed  libg/twofish
     supercop/aes_core  supercop/cast-ssl
     )

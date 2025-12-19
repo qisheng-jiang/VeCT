@@ -4,22 +4,25 @@ import numpy as np
 import os
 import matplotlib as mpl
 from matplotlib.patches import Rectangle
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
-mpl.rcParams['font.size'] = 7
+mpl.rcParams['font.size'] = 9
 mpl.rcParams['font.family'] = 'sans-serif'
 # mpl.rcParams['font.serif'] = ['CMU Serif', 'DejaVu Serif'] # 'Times New Roman', 
 mpl.rcParams['pdf.fonttype'] = 42
-mpl.rcParams['axes.labelpad'] = 0   
+mpl.rcParams['axes.labelpad'] = 0 
 mpl.rcParams['xtick.major.pad'] = 0 
-mpl.rcParams['ytick.major.pad'] = 0
-mpl.rcParams['legend.fontsize'] = 8
+mpl.rcParams['ytick.major.pad'] = 0 
+mpl.rcParams['legend.fontsize'] = 9
 
+cmap_disc = ListedColormap(["#24C07F", "orange", "#ff2d2d"])
+norm_disc = BoundaryNorm([-0.5, 0.5, 1.5, 2.5], ncolors=cmap_disc.N)
 
 def generate_group_heatmaps(csv_path, output_dir,
                                 group_col, x_col, y_col,
                                 value_col1, value_col2,
                                 highlight_regions=None,
-                                figsize=(3.25, 3), cmap='viridis'):
+                                figsize=(3, 3), cmap='viridis'):
     """
     For each group in 'group_col', generate two heatmaps over a square grid of all masks:
       - One for abs(value_col1)
@@ -58,16 +61,16 @@ def generate_group_heatmaps(csv_path, output_dir,
         
         # Optionally fill diagonal with zeros or NaN; keep NaN for clarity
         
-        for mat, label in [(mat1, f"abs_{value_col1}"), (mat2, value_col2)]:
+        for mat, label in [(mat2, value_col2)]:
             fig, ax = plt.subplots(figsize=figsize)
             cax = ax.imshow(mat.values, aspect='auto', origin='lower',
-                            interpolation='nearest', cmap=cmap,
-                            vmin=abs1_vmin if label.startswith('abs_') else v2_vmin,
-                            vmax=abs1_vmax if label.startswith('abs_') else v2_vmax)
+                            interpolation='nearest', 
+                            cmap=cmap_disc,
+                            norm=norm_disc)
             ax.set_xticks(np.arange(len(unique_masks)))
             ax.set_xticklabels(mask_labels, rotation=45, ha='right')
             ax.set_yticks(np.arange(len(unique_masks)))
-            ax.set_yticklabels(mask_labels)
+            ax.set_yticklabels(mask_labels, rotation=45, va='top', ha='right')
 
             # optional highlights
             if highlight_regions is not None:
@@ -93,7 +96,7 @@ def generate_group_heatmaps(csv_path, output_dir,
                 colorbar_label = "t-statistic"
             else:
                 colorbar_label = "Difference Detected"
-            fig.colorbar(cax, ax=ax, label=colorbar_label)
+            # fig.colorbar(cax, ax=ax, label=colorbar_label)
             fig.tight_layout(pad=0)
             safe_grp = str(grp).replace(' ', '_').replace('/', '_')
             out_file = os.path.join(output_dir, f"heatmap_{safe_grp}_{label}.pdf")
@@ -103,13 +106,13 @@ def generate_group_heatmaps(csv_path, output_dir,
 
 
 highlights = [('Index 0', 'Index 0', 'Index 3', 'Index 3', 
-         {'edgecolor':'red', 'linewidth':2, 'linestyle':'-'}),
+         {'edgecolor':'purple', 'linewidth':2, 'linestyle':'-'}),
          ('Index 4', 'Index 4', 'Index 7', 'Index 7', 
-         {'edgecolor':'red', 'linewidth':2, 'linestyle':'-'}), 
+         {'edgecolor':'purple', 'linewidth':2, 'linestyle':'-'}), 
          ('Index 0', 'Index 4', 'Index 3', 'Index 7', 
-         {'edgecolor':'orange', 'linewidth':2, 'linestyle':'--'}),
+         {'edgecolor': '#006DEA', 'linewidth':2, 'linestyle':'--'}),
          ('Index 4', 'Index 0', 'Index 7', 'Index 3', 
-         {'edgecolor':'orange', 'linewidth':2, 'linestyle':'--'})]
+         {'edgecolor':"#006DEA", 'linewidth':2, 'linestyle':'--'})]
 
 root_path = "data/"
 tests = ['gather_scatter_index_time', 'gather_scatter_false_dependency'] 
@@ -123,6 +126,6 @@ for i in tests:
         y_col="mask 2",
         value_col1="t_value",
         value_col2="difference_detected",
-        highlight_regions=highlights,
+        highlight_regions=None if 'false_dependency' in i else highlights,
     )
 

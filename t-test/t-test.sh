@@ -1,5 +1,8 @@
 #! /bin/bash
 
+set -e
+set -x
+
 CPU_CORE=1
 mkdir -p data
 
@@ -120,3 +123,9 @@ taskset -c $CPU_CORE ./avx_index_test_false_depen.out > $output_file
 
 python3 run_dudect.py -f $output_file
 
+# ===================
+# Generate figures 
+# ===================
+
+python3 dudect_pic.py
+python3 dudect_pic_index.py

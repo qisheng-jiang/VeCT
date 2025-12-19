@@ -32,14 +32,28 @@ The repository is organized as follows:
 1.  **Clone the repository:**
 
     ```bash
-    git clone VeCT
+    git clone https://github.com/qisheng-jiang/VeCT
     cd VeCT
     ```
 
-2.  **Build the VeCT tool and benchmarks:**
+2.  **Setup environment:**
     
     ```bash 
-    
+    docker build -t image-vect .
+    docker run --rm -it -v "$(pwd)":/app image-vect /bin/bash
+    cd src
+    ./install.sh
+    . ./setup.sh
+    ./llvm_compile_dfsan_cpp.sh
+    apt update -y
+    apt upgrade -y 
+    apt install -y llvm-13 clang-13 
+    ```
+
+3.  **Build VeCT:**
+    ```bash 
+    cd /app/src/passes && make install
+    cd /app/src/lib && make install 
     ```
 
 ## How to Run Experiments
@@ -49,11 +63,13 @@ The repository is organized as follows:
 To reproduce the t-test results for AVX-512 memory access:
 
 ```bash
-cd t-test
+cd /app/t-test
 bash t-test.sh
 ```
 
-The results will be generated in the `data/` subdirectory.
+The results will be generated in the [`data/`](./t-test/data/) subdirectory. 
+
+See [`./t-test/results.md`](./t-test/results.md) for the reproduced results in the paper. 
 
 ### Running the Benchmarks
 

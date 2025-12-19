@@ -18,6 +18,9 @@ RUN apt-get -o Acquire::Check-Valid-Until=false install -y \
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN git config --global user.email "fake@fake.fake" && \
+    git config --global user.name "fake name"
+
+RUN pip3 install pandas matplotlib numpy 
 
 WORKDIR /app

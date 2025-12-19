@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <time.h>
 #include <math.h>
+#include <x86intrin.h>
+#include <immintrin.h>
 
 #define NUM_ITERATIONS 510000uL
 #define CACHE_LINE_SIZE 64

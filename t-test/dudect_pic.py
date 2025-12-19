@@ -4,22 +4,26 @@ import numpy as np
 import os
 import matplotlib as mpl
 from matplotlib.patches import Rectangle
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
-mpl.rcParams['font.size'] = 7
+mpl.rcParams['font.size'] = 9
 mpl.rcParams['font.family'] = 'sans-serif'
 # mpl.rcParams['font.serif'] = ['CMU Serif', 'DejaVu Serif'] # 'Times New Roman', 
 mpl.rcParams['pdf.fonttype'] = 42 
 mpl.rcParams['axes.labelpad'] = 0  
 mpl.rcParams['xtick.major.pad'] = 0 
 mpl.rcParams['ytick.major.pad'] = 0 
-mpl.rcParams['legend.fontsize'] = 8
+mpl.rcParams['legend.fontsize'] = 9
+
+cmap_disc = ListedColormap(["#24C07F", "orange", "#ff2d2d"])
+norm_disc = BoundaryNorm([-0.5, 0.5, 1.5, 2.5], ncolors=cmap_disc.N)  # 3 档边界
 
 
 def generate_group_heatmaps(csv_path, output_dir,
                                 group_col, x_col, y_col,
                                 value_col1, value_col2,
                                 highlight_regions=None,
-                                figsize=(3.25, 3), cmap='viridis'):
+                                figsize=(3, 3), cmap='viridis'):
     """
     For each group in 'group_col', generate two heatmaps over a square grid of all masks:
       - One for abs(value_col1)
@@ -29,6 +33,11 @@ def generate_group_heatmaps(csv_path, output_dir,
     df = pd.read_csv(csv_path)
     df.columns = df.columns.str.strip()
     os.makedirs(output_dir, exist_ok=True)
+
+    if 'false_dependency' in csv_path:
+        df = df[~(df['group'].str.contains("Write") 
+                       & (df['mask 1'].str.contains("Mask 0")
+                       | df['mask 2'].str.contains("Mask 0")))]
 
     abs1_vmin = df[value_col1].abs().min()
     abs1_vmax = df[value_col1].abs().max()
@@ -58,16 +67,16 @@ def generate_group_heatmaps(csv_path, output_dir,
         
         # Optionally fill diagonal with zeros or NaN; keep NaN for clarity
         
-        for mat, label in [(mat1, f"abs_{value_col1}"), (mat2, value_col2)]:
+        for mat, label in [(mat2, value_col2)]:
             fig, ax = plt.subplots(figsize=figsize)
             cax = ax.imshow(mat.values, aspect='auto', origin='lower',
-                            interpolation='nearest', cmap=cmap,
-                            vmin=abs1_vmin if label.startswith('abs_') else v2_vmin,
-                            vmax=abs1_vmax if label.startswith('abs_') else v2_vmax)
+                            interpolation='nearest', 
+                            cmap=cmap_disc,
+                            norm=norm_disc)
             ax.set_xticks(np.arange(len(unique_masks)))
             ax.set_xticklabels(mask_labels, rotation=45, ha='right')
             ax.set_yticks(np.arange(len(unique_masks)))
-            ax.set_yticklabels(mask_labels)
+            ax.set_yticklabels(mask_labels, rotation=45, va='top', ha='right')
 
             # optional highlights
             if highlight_regions is not None:
@@ -93,7 +102,7 @@ def generate_group_heatmaps(csv_path, output_dir,
                 colorbar_label = "t-statistic"
             else:
                 colorbar_label = "Difference Detected"
-            fig.colorbar(cax, ax=ax, label=colorbar_label)
+            # fig.colorbar(cax, ax=ax, label=colorbar_label)
             fig.tight_layout(pad=0)
             safe_grp = str(grp).replace(' ', '_').replace('/', '_')
             out_file = os.path.join(output_dir, f"heatmap_{safe_grp}_{label}.pdf")
@@ -103,13 +112,13 @@ def generate_group_heatmaps(csv_path, output_dir,
 
 
 highlights = [('0x8000', '0x8000', '0x0100', '0x0100', 
-         {'edgecolor':'red','linewidth':2}),
+         {'edgecolor':'purple','linewidth':2}),
          ('0xA000', '0xA000', '0x6000', '0x6000', 
-         {'edgecolor':'red','linewidth':2}),
+         {'edgecolor':'purple','linewidth':2}),
          ('0x4444', '0x4444', '0x5500', '0x5500', 
-         {'edgecolor':'red','linewidth':2}),
+         {'edgecolor':'purple','linewidth':2}),
          ('0x5999', '0x5999', '0x5555', '0x5555', 
-         {'edgecolor':'red','linewidth':2})]
+         {'edgecolor':'purple','linewidth':2})]
 
 root_path = "data/"
 tests = ['packed_singleline_time', 

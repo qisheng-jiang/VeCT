@@ -38,7 +38,9 @@ The repository is organized as follows:
 
 2.  **Build the VeCT tool and benchmarks:**
     
-    Refer to [README](./OLD_README.md). 
+    ```bash 
+    
+    ```
 
 ## How to Run Experiments
 

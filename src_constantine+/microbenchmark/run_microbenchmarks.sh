@@ -1,10 +1,10 @@
 #!/bin/bash 
 
-# set -e
-# set -x
+set -e
+set -x
 
-docker_name=constantine-org
-FILE=test/vector-perf.c
+ROOT=/app/src_constantine+
+FILE=`pwd`/vector-perf.c
 FILE_NAME=${FILE::-2}
 
 output_dir=$FILE_NAME-output
@@ -23,24 +23,22 @@ function run_test {
     rm -f $FILE_NAME.final.s $FILE_NAME.final.o 
 
     echo "Running test with array_size=$array_size and update_size=$update_size for $test_type with is_load=$is_load" >> $output_file
-    docker exec $docker_name bash -c \
-    "cd /root/constantine/src && \
-    . ./setup.sh && \
-    ./constantine -O0 $FILE -o $FILE_NAME.out && \
-    llvm-dis $FILE_NAME.final.bc -o $output_dir/$test_type.$array_size.$update_size.$is_load.final.ll"
-    llc -march=x86-64 -mattr=+avx512f,+avx512vl $FILE_NAME.final.bc
-    clang -c $FILE_NAME.final.s -o $FILE_NAME.final.o
-    clang -no-pie -o $FILE_NAME.out $FILE_NAME.final.o
+    cd $ROOT
+    . ./setup.sh 
+    ./constantine -O0 $FILE -o $FILE_NAME.out || true 
+    llvm-dis $FILE_NAME.final.bc -o $output_dir/$test_type.$array_size.$update_size.$is_load.final.ll
+    llc-13 -march=x86-64 -mattr=+avx512f,+avx512vl $FILE_NAME.final.bc
+    clang-13 -c $FILE_NAME.final.s -o $FILE_NAME.final.o
+    clang-13 -no-pie -o $FILE_NAME.out $FILE_NAME.final.o
 
     for repeat in {1..10}
     do
-    $FILE_NAME.out <./apps/binsec/random_input.txt 2>> $output_file
+    $FILE_NAME.out <$ROOT/real-world-apps/binsec/random_input.txt 2>> $output_file
     done
     
     sleep 0.1
 
 }
-
 
 
 function run_insecure {
@@ -58,26 +56,26 @@ function run_insecure {
     rm -f $FILE_NAME.base.ll
     rm -f $origexe1 $bc1
 
-    docker exec $docker_name bash -c \
-    "cd /root/constantine/src && \
-    . ./setup.sh && \
-    bash test/build_orig.sh $FILE_NAME.c clang "" """
-
     echo "Running test with original-bk array_size=$array_size and update_size=$update_size for $test_type with is_load=$is_load" >> $output_file
+    cd $ROOT 
+    . ./setup.sh 
+    bash ./microbenchmark/build_orig.sh $FILE_NAME.c clang "" ""
 
     for repeat in {1..10}
     do
-    $origexe1 <./apps/binsec/random_input.txt 2>> $output_file
+    $origexe1 <$ROOT/real-world-apps/binsec/random_input.txt 2>> $output_file
     done
 
     sleep 0.1
 
 }
 
-echo -e "#define DFL_STRIDE (${stride_size}uL)" > ../include/conf.h
 
 for stride_size in 64 4
 do 
+
+echo -e "#define DFL_STRIDE (${stride_size}uL)" > $ROOT/include/conf.h
+
 con_output_file=$output_dir/constantine-$stride_size.log
 con_results_file=$output_dir/constantine-$stride_size.res
 [ -e $con_output_file ] && mv -f $con_output_file $con_output_file.bk
@@ -89,15 +87,15 @@ insecure_results_file=$output_dir/insecure-$stride_size.res
 [ -e $insecure_results_file ] && mv -f $insecure_results_file $insecure_results_file.bk
 
 
-docker restart $docker_name
-
-docker exec $docker_name bash -c \
-"cd /root/constantine/src && \
-. ./setup.sh && \
-cd lib && rm ./dfl/dfl.o && make install -j10 && \
-cd /root/constantine/src && \
-cd passes && make install -j10" 
-
+cd $ROOT
+. ./setup.sh
+cd lib 
+rm -f ./dfl/dfl.o
+make install -j10
+cd $ROOT
+cd passes
+rm -f ./dfl/dfl.so ./dfl/dfl.o
+make install -j10
 
     update_size=6
     for test_type in uint32_t uint64_t
@@ -107,7 +105,7 @@ cd passes && make install -j10"
         for array_size in 10 100 1000 10000 
         do 
             run_test $test_type $array_size $update_size $is_load $con_output_file
-            run_insecure $test_type $array_size $update_size $is_load $insecure_output_file
+            [ "$stride_size" -eq 64 ] && run_insecure $test_type $array_size $update_size $is_load $insecure_output_file
         done
     done
     done
@@ -121,7 +119,7 @@ cd passes && make install -j10"
         for update_size in 2 4 8 10 12 14 15 
         do 
             run_test $test_type $array_size $update_size $is_load $con_output_file
-            run_insecure $test_type $array_size $update_size $is_load $insecure_output_file
+            [ "$stride_size" -eq 64 ] && run_insecure $test_type $array_size $update_size $is_load $insecure_output_file
         done
     done
     test_type=uint64_t 
@@ -130,15 +128,15 @@ cd passes && make install -j10"
         for update_size in 2 4 7 
         do 
             run_test $test_type $array_size $update_size $is_load $con_output_file
-            run_insecure $test_type $array_size $update_size $is_load $insecure_output_file
+            [ "$stride_size" -eq 64 ] && run_insecure $test_type $array_size $update_size $is_load $insecure_output_file
         done
     done
 
 
-    python3 test/stats.py $con_output_file > $con_results_file
+    python3 $ROOT/microbenchmark/stats.py $con_output_file > $con_results_file
     echo "Output log saved to $con_output_file; Results saved to $con_results_file"
 
-    python3 test/stats.py $insecure_output_file > $insecure_results_file
+    python3 $ROOT/microbenchmark/stats.py $insecure_output_file > $insecure_results_file
     echo "Output log saved to $insecure_output_file; Results saved to $insecure_results_file"
 
 done 

@@ -21,6 +21,6 @@ RUN apt-get clean && \
 RUN git config --global user.email "fake@fake.fake" && \
     git config --global user.name "fake name"
 
-RUN pip3 install pandas matplotlib numpy 
+RUN pip3 install pandas matplotlib numpy click seaborn
 
 WORKDIR /app

@@ -22,5 +22,11 @@ debug/
 *.csv
 venv/*
 t-test/data/*
+*/microbenchmark/*-output/*
+
+*.log
+*/dft.tmp*
+*/loops-cfl.conf
+*final.s
 
 .DS_Store

@@ -52,8 +52,8 @@ The repository is organized as follows:
 
 3.  **Build VeCT:**
     ```bash 
-    cd /app/src/passes && make install
-    cd /app/src/lib && make install 
+    cd ./src/passes && make install
+    cd ./src/lib && make install 
     ```
 
 ## How to Run Experiments
@@ -63,13 +63,11 @@ The repository is organized as follows:
 To reproduce the t-test results for AVX-512 memory access:
 
 ```bash
-cd /app/t-test
+cd ./t-test
 bash t-test.sh
 ```
 
-The results will be generated in the [`data/`](./t-test/data/) subdirectory. 
-
-See [`./t-test/results.md`](./t-test/results.md) for the reproduced results in the paper. 
+The results will be generated in the [`./t-test/data/`](./t-test/data/) subdirectory. 
 
 ### Running the Benchmarks
 
@@ -78,14 +76,20 @@ You can evaluate VeCT's performance and security on both microbenchmarks and rea
 1.  **Microbenchmarks:**
 
     ```bash
-    cd src/microbenchmark
-    ./run_microbenchmarks.sh
+    cd ./src/microbenchmark
+    bash run_microbenchmarks.sh
     ```
+
+The results will be generated in the [`./src/microbenchmark/vector-perf-output`](./src/microbenchmark/vector-perf-output) subdirectory. 
 
 2.  **Real-World Applications:**
 
     ```bash
-    cd src/real-world-apps
-    ./run_app_tests.sh
+    cd ./src/real-world-apps
+    bash run_app_tests.sh
     ```
+
+## Reproduce 
+
+See [Evaluation.md](./Evaluation.md) for more details. 
 

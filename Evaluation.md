@@ -39,7 +39,6 @@ cd /app/src/lib && make install -j10
 
 ```bash 
 cd /app/src_constantine+
-./install.sh 
 . ./setup.sh
 cd /app/src_constantine+/passes && make install -j10
 cd /app/src_constantine+/lib && make install -j10

@@ -5,6 +5,13 @@
 
 Intel CPU supporting AVX-512 
 
+**How to check** 
+```bash 
+lscpu | grep avx512
+# output should be like the following 
+> Flags: ... avx512* ...
+```
+
 
 ## Software dependencies
 
@@ -55,7 +62,7 @@ bash t-test.sh
 
 ## Microbenchmarks (Section 6.1)
 
-### Overview and Impact of Access Count 
+- **Overview and Impact of Access Count** 
 
 ```bash
 # run VeCT (Vector and Single)
@@ -71,8 +78,9 @@ python3 stats_pic.py
 
 [`./src/microbenchmark/results.md`](./src/microbenchmark/results.md) shows the reproduced results for Figures 15-16 in the paper. 
 
-### Security Validation 
+- **Security Validation** 
 
 
+## Real-World Applications (Section 6.2)
 
 

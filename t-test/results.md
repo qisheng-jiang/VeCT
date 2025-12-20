@@ -31,4 +31,4 @@
 - [Figure 5(c)](./data/gather_scatter_false_dependency_heatmaps/heatmap_store_difference_detected.pdf)
 
 
-Note: `./data/` also contains more results in Appendix A. Please see Appendix A and `./data/` for more details. 
+Note: [`./data/`](./data/) also contains more results in Appendix A. Please see Appendix A and [`./data/`](./data/) for more details. 

@@ -80,7 +80,32 @@ python3 stats_pic.py
 
 - **Security Validation** 
 
+```bash
+cd /app/src/microbenchmark
+bash vector-t-test.sh
+bash vector-t-test-false-depen.sh 
+```
+
+The output should look like the following:
+
+```bash
+> 
+> 
+```
 
 ## Real-World Applications (Section 6.2)
 
+```bash 
+# run VeCT (Vector and Single)
+cd /app/src/real-world-apps
+bash run_app_tests.sh
+# run baselines (Constantine+ and Origianl insecure code)
+cd /app/src_constantine+/real-world-apps
+bash run_app_tests.sh
+# generate results 
+cd /app/src/real-world-apps
+python3 stats_table.py 
+```
+
+[`./src/real-world-apps/results.md`](./src/real-world-apps/results.md) shows the reproduced results for Table 1 in the paper. 
 

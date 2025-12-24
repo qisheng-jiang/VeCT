@@ -1,12 +1,12 @@
 #!/bin/bash 
 
-# set -e
-# set -x
+set -e
+set -x
 
-docker_name=constantine
+ROOT=/app/src
 dir_name=$(basename "$PWD")
 
-output_dir=output
+output_dir=`pwd`/output
 mkdir -p $output_dir
 output_file=$output_dir/run_test.log
 [ -e $output_file ] && mv -f $output_file $output_file.bk
@@ -54,26 +54,23 @@ stride_size=$2
 read_only=$3
 skip_compile=$4
 
-noavxexe1=$name".noavx"
+# noavxexe1=$name".noavx"
 avx512exe1=$name".avx512"
 
-echo -e "#define DFL_STRIDE (${stride_size}uL)\n#define DFL_VECTORIZE (false)\n#define DFL_READONLY ($read_only)" > ../../include/conf.h
+echo -e "#define DFL_STRIDE (${stride_size}uL)\n#define DFL_VECTORIZE (false)\n#define DFL_READONLY ($read_only)" > $ROOT/include/conf.h
 
+cd $ROOT/real-world-apps/$dir_name
 if [ "$skip_compile" ]; then
-    docker exec $docker_name bash -c \
-    "cd /root/constantine/src/apps/$dir_name && \
-    SKIP=1 ./compile.sh $name"
+    SKIP=1 ./compile.sh $name
 else
-    docker exec $docker_name bash -c \
-    "cd /root/constantine/src/apps/$dir_name && \
-    ./compile.sh $name"
+    ./compile.sh $name
 fi
 
-for exec1 in $noavxexe1 $avx512exe1
+for exec1 in $avx512exe1
 do
-    llc -march=x86-64 -mattr=+avx512f,+avx512vl $exec1.bc
-    clang -c $exec1.s -o $exec1.o
-    clang -no-pie -fno-exceptions -o $exec1.out -ldl -lm -pthread $exec1.o
+    llc-13 -march=x86-64 -mattr=+avx512f,+avx512vl $exec1.bc
+    clang-13 -c $exec1.s -o $exec1.o
+    clang-13 -no-pie -fno-exceptions -o $exec1.out -ldl -lm -pthread $exec1.o
 
     copy_file $exec1.ll $output_dir/${exec1}-${stride_size}.ll
     copy_file $exec1.out $output_dir/${exec1}-${stride_size}.out
@@ -89,21 +86,18 @@ skip_compile=$5
 
 avx512vectorexe1=$name".avx512.vector"
 
-echo -e "#define DFL_STRIDE (${stride_size}uL)\n#define DFL_VECTORIZE (true)\n#define DFL_READONLY ($read_only)" > ../../include/conf.h
+echo -e "#define DFL_STRIDE (${stride_size}uL)\n#define DFL_VECTORIZE (true)\n#define DFL_READONLY ($read_only)" > $ROOT/include/conf.h
 
+cd $ROOT/real-world-apps/$dir_name
 if [ "$skip_compile" ]; then
-    docker exec $docker_name bash -c \
-    "cd /root/constantine/src/apps/$dir_name && \
-    PRE_CFL=$pre_cfl SKIP=1 VECTOR=1 ./compile.sh $name"
+    PRE_CFL=$pre_cfl SKIP=1 VECTOR=1 ./compile.sh $name
 else
-    docker exec $docker_name bash -c \
-    "cd /root/constantine/src/apps/$dir_name && \
-    PRE_CFL=$pre_cfl VECTOR=1 ./compile.sh $name"
+    PRE_CFL=$pre_cfl VECTOR=1 ./compile.sh $name
 fi
 
-llc -march=x86-64 -mattr=+avx512f,+avx512vl $avx512vectorexe1.bc
-clang -c $avx512vectorexe1.s -o $avx512vectorexe1.o
-clang -no-pie -fno-exceptions -o $avx512vectorexe1.out -ldl -lm -pthread $avx512vectorexe1.o
+llc-13 -march=x86-64 -mattr=+avx512f,+avx512vl $avx512vectorexe1.bc
+clang-13 -c $avx512vectorexe1.s -o $avx512vectorexe1.o
+clang-13 -no-pie -fno-exceptions -o $avx512vectorexe1.out -ldl -lm -pthread $avx512vectorexe1.o
 
 copy_file $avx512vectorexe1.ll $output_dir/${avx512vectorexe1}-${stride_size}-${pre_cfl}.ll
 copy_file $avx512vectorexe1.out $output_dir/${avx512vectorexe1}-${stride_size}-${pre_cfl}.out
@@ -112,7 +106,7 @@ read_stats "$avx512vectorexe1-${stride_size}-${pre_cfl}" >> $stats_file
 }
 
 # ======================
-# READ ONLY + NO PRE CFL 
+# READ ONLY 
 # ======================
 
 project_list=(bearssl/aes_big_wrapper bearssl/des_tab_wrapper)
@@ -124,29 +118,6 @@ do
         compile_single ${project_list[i]} $stride_size 1 "skip recompile" 
     done
 
-    compile_vector ${project_list[0]} $stride_size 1 0
-    for ((i = 1; i < ${#project_list[@]}; i++)); do
-        compile_vector ${project_list[i]} $stride_size 1 0 "skip recompile" 
-    done
-
-    for ((i = 0; i < ${#project_list[@]}; i++)); do
-        PROJECT_NAME=${project_list[i]}
-        echo "== Run $PROJECT_NAME with stride size $stride_size" >> $output_file
-        run_noperf $PROJECT_NAME.noavx.out 2>> $output_file
-        run_noperf $PROJECT_NAME.avx512.out 2>> $output_file
-        run_noperf $PROJECT_NAME.avx512.vector.out 2>> $output_file
-        echo "" >> $output_file
-    done
-done
-
-# ======================
-# READ ONLY + PRE CFL 
-# ======================
-
-project_list=(bearssl/aes_big_wrapper bearssl/des_tab_wrapper)
-
-for stride_size in 64 4
-do 
     compile_vector ${project_list[0]} $stride_size 1 1
     for ((i = 1; i < ${#project_list[@]}; i++)); do
         compile_vector ${project_list[i]} $stride_size 1 1 "skip recompile" 
@@ -154,7 +125,9 @@ do
 
     for ((i = 0; i < ${#project_list[@]}; i++)); do
         PROJECT_NAME=${project_list[i]}
-        echo "== Run pre_cfl/$PROJECT_NAME with stride size $stride_size" >> $output_file
+        echo "== Run $PROJECT_NAME with stride size $stride_size" >> $output_file
+        # run_noperf $PROJECT_NAME.noavx.out 2>> $output_file
+        run_noperf $PROJECT_NAME.avx512.out 2>> $output_file
         run_noperf $PROJECT_NAME.avx512.vector.out 2>> $output_file
         echo "" >> $output_file
     done

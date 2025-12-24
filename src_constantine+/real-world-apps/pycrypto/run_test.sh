@@ -1,12 +1,12 @@
 #!/bin/bash 
 
-# set -e
-# set -x
+set -e
+set -x
 
-docker_name=constantine-org
+ROOT=/app/src_constantine+
 dir_name=$(basename "$PWD")
 
-output_dir=output
+output_dir=`pwd`/output
 mkdir -p $output_dir
 output_file=$output_dir/run_test.log
 [ -e $output_file ] && mv -f $output_file $output_file.bk
@@ -34,27 +34,26 @@ compile_single() {
 name=$1
 stride_size=$2
 
-origexe1=src/$name".orig"
-noavxexe1=src/$name".noavx"
+# origexe1=src/$name".orig"
+# noavxexe1=src/$name".noavx"
 avx512exe1=src/$name".avx512"
 
-echo -e "#define DFL_STRIDE (${stride_size}uL)" > ../../include/conf.h
+echo -e "#define DFL_STRIDE (${stride_size}uL)" > $ROOT/include/conf.h
 
+echo -e "#define DFL_STRIDE (${stride_size}uL)" > $ROOT/include/conf.h
+
+cd $ROOT/real-world-apps/$dir_name 
 if [ "$3" ]; then
-    docker exec $docker_name bash -c \
-    "cd /root/constantine/src/apps/$dir_name && \
-    SKIP=1 ./compile.sh $name"
+    SKIP=1 ./compile.sh $name
 else
-    docker exec $docker_name bash -c \
-    "cd /root/constantine/src/apps/$dir_name && \
-    ./compile.sh $name"
+    ./compile.sh $name
 fi
 
-for exec1 in $origexe1 $noavxexe1 $avx512exe1
+for exec1 in $avx512exe1
 do
-    llc -march=x86-64 -mattr=+avx512f,+avx512vl $exec1.bc
-    clang -c $exec1.s -o $exec1.o
-    clang -no-pie -fno-exceptions -o $exec1.out -ldl -lm -pthread $exec1.o
+    llc-13 -march=x86-64 -mattr=+avx512f,+avx512vl $exec1.bc
+    clang-13 -c $exec1.s -o $exec1.o
+    clang-13 -no-pie -fno-exceptions -o $exec1.out -ldl -lm -pthread $exec1.o
 
     copy_file $exec1.ll $output_dir/${exec1}-${stride_size}.ll
     copy_file $exec1.out $output_dir/${exec1}-${stride_size}.out
@@ -73,8 +72,8 @@ for stride_size in 64 4; do
         PROJECT_NAME=src/${project_list[i]}
         echo "== Run $PROJECT_NAME with stride size $stride_size" >> $output_file
         run_noperf $PROJECT_NAME.orig-bk.out 2>> $output_file
-        run_noperf $PROJECT_NAME.orig.out 2>> $output_file
-        run_noperf $PROJECT_NAME.noavx.out 2>> $output_file
+        # run_noperf $PROJECT_NAME.orig.out 2>> $output_file
+        # run_noperf $PROJECT_NAME.noavx.out 2>> $output_file
         run_noperf $PROJECT_NAME.avx512.out 2>> $output_file
         echo "" >> $output_file
     done

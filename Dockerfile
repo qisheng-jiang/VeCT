@@ -13,7 +13,8 @@ RUN apt-get -o Acquire::Check-Valid-Until=false install -y \
     make \
     ninja-build \
     python3 \
-    python3-pip
+    python3-pip \
+    xxd
 
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*

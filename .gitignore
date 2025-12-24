@@ -23,10 +23,11 @@ debug/
 venv/*
 t-test/data/*
 */microbenchmark/*-output/*
+*.bk
 
 *.log
 */dft.tmp*
-*/loops-cfl.conf
-*final.s
+loops-cfl.conf
+*.s
 
 .DS_Store

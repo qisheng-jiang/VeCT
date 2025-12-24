@@ -86,7 +86,7 @@ You can evaluate VeCT's performance and security on both microbenchmarks and rea
     bash run_validation.sh 
     ```
 
-The results will be generated in the following subdirectories. 
+The results will be generated in the following subdirectories: 
 - [`./src/microbenchmark/vector-perf-output`](./src/microbenchmark/vector-perf-output)
 - [`./src/microbenchmark/vector-t-test-output`](./src/microbenchmark/vector-t-test-output) 
 - [`./src/microbenchmark/vector-t-test-false-depen-output`](./src/microbenchmark/vector-t-test-false-depen-output)
@@ -99,7 +99,7 @@ The results will be generated in the following subdirectories.
     bash run_app_tests.sh
     ```
 
-The results will be generated in the following subdirectories. 
+The results will be generated in the following subdirectories: 
 - [`./src/real-world-apps/binsec/output`](./src/real-world-apps/binsec/output) 
 - [`./src/real-world-apps/issta2018-benchmarks-wu/output`](./src/real-world-apps/issta2018-benchmarks-wu/output) 
 - [`./src/real-world-apps/pycrypto/output`](./src/real-world-apps/pycrypto/output) 

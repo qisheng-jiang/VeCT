@@ -2,6 +2,9 @@
 
 This repository contains the source code and experimental artifacts for **VeCT**, a tool designed to automatically rewrite code to be constant-time by leveraging modern CPU vector extensions like AVX-512. VeCT aims to provide strong security guarantees against timing-based side-channel attacks while maintaining high performance.
 
+> NOTE: Please refer to [Evaluation.md](./Evaluation.md) for **Artifact Evaluation**. 
+
+
 ## Directory Structure
 
 The repository is organized as follows:
@@ -56,7 +59,7 @@ The repository is organized as follows:
     cd ./src/lib && make install 
     ```
 
-## How to Run Experiments
+## How to Run VeCT
 
 ### Running the side-channel Assessment (t-test)
 
@@ -77,10 +80,17 @@ You can evaluate VeCT's performance and security on both microbenchmarks and rea
 
     ```bash
     cd ./src/microbenchmark
+    # Overview and Impact of Access Count
     bash run_microbenchmarks.sh
+    # Security Validation
+    bash run_validation.sh 
     ```
 
-The results will be generated in the [`./src/microbenchmark/vector-perf-output`](./src/microbenchmark/vector-perf-output) subdirectory. 
+The results will be generated in the following subdirectories. 
+- [`./src/microbenchmark/vector-perf-output`](./src/microbenchmark/vector-perf-output)
+- [`./src/microbenchmark/vector-t-test-output`](./src/microbenchmark/vector-t-test-output) 
+- [`./src/microbenchmark/vector-t-test-false-depen-output`](./src/microbenchmark/vector-t-test-false-depen-output)
+
 
 2.  **Real-World Applications:**
 
@@ -89,7 +99,18 @@ The results will be generated in the [`./src/microbenchmark/vector-perf-output`]
     bash run_app_tests.sh
     ```
 
-## Reproduce 
+The results will be generated in the following subdirectories. 
+- [`./src/real-world-apps/binsec/output`](./src/real-world-apps/binsec/output) 
+- [`./src/real-world-apps/issta2018-benchmarks-wu/output`](./src/real-world-apps/issta2018-benchmarks-wu/output) 
+- [`./src/real-world-apps/pycrypto/output`](./src/real-world-apps/pycrypto/output) 
+
+
+## How to Run Experiments 
 
 See [Evaluation.md](./Evaluation.md) for more details. 
 
+
+
+## Acknowledgments
+
+We are grateful to the authors of the [Constantine](https://github.com/pietroborrello/constantine) framework for their open-source contribution.

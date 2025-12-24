@@ -8,7 +8,10 @@ Intel CPU supporting AVX-512
 **How to check** 
 ```bash 
 lscpu | grep avx512
-# output should be like the following 
+```
+
+The output should look like the following:
+```bash 
 > Flags: ... avx512* ...
 ```
 
@@ -82,15 +85,16 @@ python3 stats_pic.py
 
 ```bash
 cd /app/src/microbenchmark
-bash vector-t-test.sh
-bash vector-t-test-false-depen.sh 
+bash run_validation.sh 
 ```
 
-The output should look like the following:
+[`./src/microbenchmark/validation.md`](./src/microbenchmark/validation.md) shows the reproduced results for security validation in the paper. 
+
+The output should look like the following for each setup:
 
 ```bash
-> 
-> 
+> Processing groups: [xxx] with masks: index 0, index 1
+> meas: [0.00] M, max t:   [+0.30], max tau: [6.71e-02], (5/tau)^2: [5.56e+03]. For the moment, maybe constant time.
 ```
 
 ## Real-World Applications (Section 6.2)

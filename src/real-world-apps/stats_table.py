@@ -92,6 +92,7 @@ def process_benchmark_data(file1_path, file2_path, output_md_path):
     print("# Final Results\n")
     print(md_output)
     with open(output_md_path, 'w', encoding='utf-8') as f:
+        f.write("## Results for real-world applications (Section 6.2)\n\n")
         f.write(md_output)
 
     print(f"Output: {output_md_path}")

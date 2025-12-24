@@ -18,7 +18,7 @@ The output should look like the following:
 
 ## Software dependencies
 
-We recommande using Docker for setting up environment smoothly. 
+We recommend using Docker for setting up environment smoothly. 
 
 > Please refer to [Docker](https://docs.docker.com/get-started/) to see more details about how to install Docker. 
 

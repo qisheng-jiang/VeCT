@@ -136,7 +136,7 @@ make install -j10
     python3 $ROOT/microbenchmark/stats.py $con_output_file > $con_results_file
     echo "Output log saved to $con_output_file; Results saved to $con_results_file"
 
-    python3 $ROOT/microbenchmark/stats.py $insecure_output_file > $insecure_results_file
-    echo "Output log saved to $insecure_output_file; Results saved to $insecure_results_file"
+    [ "$stride_size" -eq 64 ] && python3 $ROOT/microbenchmark/stats.py $insecure_output_file > $insecure_results_file
+    [ "$stride_size" -eq 64 ] && echo "Output log saved to $insecure_output_file; Results saved to $insecure_results_file"
 
 done 

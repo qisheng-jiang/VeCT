@@ -25,7 +25,7 @@ function run_test {
     cd $ROOT
     . ./setup.sh 
     ./constantine -O0 $FILE -o $FILE_NAME.out || true 
-    llvm-dis $FILE_NAME.final.bc -o $output_dir/$test_type.$array_size.$update_size.$is_load.final.ll
+    llvm-dis $FILE_NAME.final.bc -o $output_dir/$test_type.$update_size.$is_load.final.ll
     llc-13 -march=x86-64 -mattr=+avx512f,+avx512vl $FILE_NAME.final.bc
     clang-13 -c $FILE_NAME.final.s -o $FILE_NAME.final.o
     clang-13 -no-pie -o $FILE_NAME.out $FILE_NAME.final.o -ldl -lm -pthread 

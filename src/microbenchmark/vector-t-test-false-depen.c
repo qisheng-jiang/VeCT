@@ -34,9 +34,9 @@ volatile bool is_loop = true;
 
 #define ARRAY_SIZE 100 // (PAGE_SIZE * 10 / sizeof(TEST_TYPE))
 
-static TEST_TYPE __attribute__((annotate("secret"))) array[ARRAY_SIZE] = {0};
+volatile static TEST_TYPE __attribute__((annotate("secret"))) array[ARRAY_SIZE] = {0};
 
-unsigned int __attribute__((annotate("secret"))) myindex[UPDATE_SIZE] = {0};
+volatile unsigned int __attribute__((annotate("secret"))) myindex[UPDATE_SIZE] = {0};
 
 static volatile TEST_TYPE res[20] = {0};
 

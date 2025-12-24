@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from subprocess import run, check_call, check_output, DEVNULL, PIPE
+import subprocess
+import string
 import random
 import shutil
 import json
@@ -217,7 +219,7 @@ def build_dft(input, optimization_level):
 
     CFLAGS  = f"-O{optimization_level} -fno-unroll-loops -mllvm -x86-cmov-converter=0 -g"
     OFLAGS  = f"-O{optimization_level}"
-    LDFLAGS = f"-O{optimization_level} " + ldflags
+    LDFLAGS = f"-O{optimization_level} " + ldflags + " -lpthread"
 
     DFSAN_ABILIST = check_output(f"{cc} {cflags} -fsanitize=dataflow -c {input} -### 2>&1 | grep sanitize | sed 's/.*-fsanitize-blacklist=\([^\\\"]*\).*/\\1/g'", shell=True).decode().strip()
     # save dfsan abilist
@@ -274,7 +276,12 @@ def run_test_suite_dft(input, dft_log):
     # run the profiler for each input in the test suite
     for _ in range(get_test_suite_size()):
         input_bytes = get_next_input()
-        check_output(f'{name}.dft.out', shell=True, input=input_bytes)
+        try:
+            check_output(f'{name}.dft.out', shell=True, input=input_bytes)
+        except subprocess.CalledProcessError as e:
+            print(f"-- {name}.dft.out FAILED (Exit Code {e.returncode}) {len(input_bytes)} --")
+            print(f"STDOUT: {e.output}")
+            print(f"STDERR: {e.stderr}")
         # the binary will dump a dft.log file, save it
         with open(dft_log,  'rb') as r:
             with open(dft_tmp, 'ab') as w:
@@ -303,7 +310,7 @@ def build_loop_trace(input, taint_log, optimization_level):
     
     CFLAGS  = f"-O{optimization_level} -fno-unroll-loops -mllvm -x86-cmov-converter=0 -g"
     OFLAGS  = f"-O{optimization_level}"
-    LDFLAGS = f"-O{optimization_level} "
+    LDFLAGS = f"-O{optimization_level} " + " -lpthread"
 
     # load metadata on tainted instructions
     opt_exec(f'-loadtainted -tainted-file={taint_log} -check-undefined -o {name}.tainted.bc {name}.coverage-id.bc')
@@ -335,7 +342,12 @@ def run_test_suite_loop(input, loop_log):
     # run the profiler for each input in the test suite
     for _ in range(get_test_suite_size()):
         input_bytes = get_next_input()
-        check_output(f'{name}.dumper.out 2>{loop_log}', shell=True, input=input_bytes)
+        try:
+            check_output(f'{name}.dumper.out 2>{loop_log}', shell=True, input=input_bytes)
+        except subprocess.CalledProcessError as e:
+            print(f"-- {name}.dumper.out FAILED (Exit Code {e.returncode}) {len(input_bytes)} --")
+            print(f"STDOUT: {e.output}")
+            print(f"STDERR: {e.stderr}")
         # the binary will dump loop info, save it
         with open(loop_log,  'rb') as r:
             with open(log_tmp, 'ab') as w:
@@ -351,7 +363,7 @@ def build_constant_time(input, output, taint_log, loop_log, optimization_level):
     
     CFLAGS  = f"-O{optimization_level} -fno-unroll-loops -mllvm -x86-cmov-converter=0 -g -fno-delete-null-pointer-checks "
     OFLAGS  = f"-O{optimization_level}"
-    LDFLAGS = f"-O{optimization_level} "
+    LDFLAGS = f"-O{optimization_level} " + " -lpthread"
 
     # load metadata on tainted instructions
     opt_exec(f'-loadtainted -tainted-file={taint_log} -o {name}.tainted.bc {name}.coverage-id.bc')

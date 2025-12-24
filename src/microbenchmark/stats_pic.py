@@ -93,7 +93,6 @@ def main():
     # Separate baseline data from others
     df_base = df[df['Label'] == baseline_label].copy()
     df_others = df[df['Label'] != baseline_label].copy()
-    df_others = df_others.sort_values('Label', ascending=False)
     
     # Rename Median column for merging
     df_base = df_base[['Array_Size', 'Update_Size', 'Data_Type', 'Is_Load', 'Median']]
@@ -133,6 +132,7 @@ def main():
                     
                 # --- Scenario 1: Fixed Update Size = 6, Vary Array Size ---
                 scenario1_data = subset[subset['Update_Size'] == 6].sort_values('Array_Size')
+                scenario1_data = scenario1_data.sort_values('Label', ascending=False)
                 
                 if not scenario1_data.empty:
                     plt.figure(figsize=(10, 6))
@@ -163,6 +163,7 @@ def main():
                     scenario2_data = scenario2_data[(scenario2_data['Update_Size'] >= 2) & (scenario2_data['Update_Size'] <= 7)]
                 
                 scenario2_data = scenario2_data.sort_values('Update_Size')
+                scenario2_data = scenario2_data.sort_values('Label', ascending=False)
 
                 if not scenario2_data.empty:
                     plt.figure(figsize=(10, 6))
@@ -182,46 +183,6 @@ def main():
 
     print(f"\nDone! Generated {plot_count} plots in the '{output_dir}' directory.")
 
-# ===============================================
-# Dummy File Generator (For testing purposes only)
-# Comment this function out when using real data.
-# ===============================================
-def create_dummy_files():
-    import random
-    types = ['uint32_t', 'uint64_t']
-    loads = [0, 1]
-    
-    # Define Configurations
-    configs = []
-    # Scene 1 configs (Vary Array Size)
-    for sz in [10, 100, 1000, 5000, 10000]:
-        configs.append((sz, 6))
-    # Scene 2 configs (Vary Update Size)
-    for us in range(2, 16):
-        configs.append((1000, us))
-        
-    for label, fname in file_mapping.items():
-        with open(fname, 'w') as f:
-            for t in types:
-                for l in loads:
-                    for arr_sz, upd_sz in configs:
-                        # Generate base values
-                        base = 10000 + arr_sz * 0.1
-                        if label == 'insecure':
-                            val = base
-                        else:
-                            # Add random overhead
-                            overhead = random.uniform(0.1, 0.5)
-                            val = base * (1 + overhead)
-                            
-                        f.write(f"== Running test with array_size={arr_sz} and update_size={upd_sz} for {t} with is_load={l} ==\n")
-                        f.write(f"Count: 10\n")
-                        f.write(f"Average: {val}\n")
-                        f.write(f"Median:  {val}\n\n")
-
 if __name__ == "__main__":
-    # UNCOMMENT the line below to generate test files if you don't have real files yet
-    # create_dummy_files() 
-    
     main()
 

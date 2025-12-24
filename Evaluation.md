@@ -71,7 +71,7 @@ bash t-test.sh
 # run VeCT (Vector and Single)
 cd /app/src/microbenchmark
 bash run_microbenchmarks.sh
-# run baselines (Constantine+ and Origianl insecure code)
+# run baselines (Constantine+ and Original insecure code)
 cd /app/src_constantine+/microbenchmark
 bash run_microbenchmarks.sh
 # generate results 
@@ -103,7 +103,7 @@ The output should look like the following for each setup:
 # run VeCT (Vector and Single)
 cd /app/src/real-world-apps
 bash run_app_tests.sh
-# run baselines (Constantine+ and Origianl insecure code)
+# run baselines (Constantine+ and Original insecure code)
 cd /app/src_constantine+/real-world-apps
 bash run_app_tests.sh
 # generate results 

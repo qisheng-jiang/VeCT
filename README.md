@@ -61,7 +61,7 @@ The repository is organized as follows:
 
 ## How to Run VeCT
 
-### Running the side-channel Assessment (t-test)
+### Running the Constant-time Guarantees Assessment (t-test)
 
 To reproduce the t-test results for AVX-512 memory access:
 

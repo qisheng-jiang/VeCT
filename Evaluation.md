@@ -54,7 +54,7 @@ cd /app/src_constantine+/passes && make install -j10
 cd /app/src_constantine+/lib && make install -j10
 ```
 
-## T-test (Section 4)
+## T-test Analysis (Section 4)
 
 ```bash
 cd /app/t-test

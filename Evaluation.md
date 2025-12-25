@@ -81,6 +81,8 @@ python3 stats_pic.py
 
 [`./src/microbenchmark/results.md`](./src/microbenchmark/results.md) shows the reproduced results for Figures 15-16 in the paper. 
 
+> Note: The `WARMUP_COUNT` and `REPEAT_COUNT` macros in the [`.c`](./src/microbenchmark/vector-perf.c) source files allow users to configure the number of test iterations.
+
 - **Security Validation** 
 
 ```bash
@@ -113,3 +115,4 @@ python3 stats_table.py
 
 [`./src/real-world-apps/results.md`](./src/real-world-apps/results.md) shows the reproduced results for Table 1 in the paper. 
 
+> Note: The `WARMUP_COUNT` and `REPEAT_COUNT` macros in the [`./src/include/exp_setup.h`](./src/include/exp_setup.h) allow users to configure the number of test iterations. 

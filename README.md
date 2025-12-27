@@ -2,7 +2,8 @@
 
 This repository contains the source code and experimental artifacts for **VeCT**, a tool designed to automatically rewrite code to be constant-time by leveraging modern CPU vector extensions like AVX-512. VeCT aims to provide strong security guarantees against timing-based side-channel attacks while maintaining high performance.
 
-> NOTE: Please refer to [Evaluation.md](./Evaluation.md) for **Artifact Evaluation**. 
+> [!NOTE]
+> Please refer to [Evaluation.md](./Evaluation.md) for **Artifact Evaluation**. 
 
 
 ## Directory Structure

@@ -31,3 +31,5 @@ loops-cfl.conf
 *.s
 
 .DS_Store
+llvm-9/
+SVF/

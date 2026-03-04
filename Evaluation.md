@@ -46,6 +46,21 @@ cd /app/src/passes && make install -j10
 cd /app/src/lib && make install -j10
 ```
 
+### Basic Test 
+
+To verify the installation, run the following script:
+```bash
+cd /app/src
+bash run.sh microbenchmark/vector-perf.c 
+./microbenchmark/vector-perf.out < ./real-world-apps/binsec/random_input.txt
+```
+
+Successful execution should produce the similar output:
+```bash 
+Success: microbenchmark/vector-perf.out
+Elapsed time in microbenchmark/vector-perf.c: [2026]
+```
+
 ### Build Baseline (Constantine+)
 
 ```bash 

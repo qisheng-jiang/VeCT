@@ -2,8 +2,18 @@
 
 This repository contains the source code and experimental artifacts for **VeCT**, a tool designed to automatically rewrite code to be constant-time by leveraging modern CPU vector extensions like AVX-512. VeCT aims to provide strong security guarantees against timing-based side-channel attacks while maintaining high performance.
 
-> [!NOTE]
-> Please refer to [Evaluation.md](./Evaluation.md) for **Artifact Evaluation**. 
+
+## Citation
+
+```bibtex
+@inproceedings{sec2026vect,
+  title={{VeCT}: Secure and Efficient Constant-Time Code Rewriting with Vector Extensions},
+  author={Qisheng Jiang and Danfeng Zhang},
+  booktitle={Proceedings of the 35th USENIX Security Symposium (USENIX Security 26)},
+  year={2026},
+  publisher={USENIX Association}
+}
+```
 
 
 ## Directory Structure
@@ -30,6 +40,10 @@ The repository is organized as follows:
   - **`./t-test/`**: This directory contains the necessary scripts, measurement data, and analysis code to reproduce our statistical side-channel assessment (t-test) concerning the constant-time guarantees for AVX-512 memory access patterns.
 
 ## Getting Started
+
+> [!NOTE]
+> Please refer to [Evaluation.md](./Evaluation.md) for **Artifact Evaluation**. 
+
 
 ### Installation & Building
 

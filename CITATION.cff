@@ -1,23 +1,28 @@
 cff-version: 1.2.0
-message: "If you use this software or cite this work, please cite it as below."
-authors:
-  - family-names: "Jiang"
-    given-names: "Qisheng"
-  - family-names: "Zhang"
-    given-names: "Danfeng"
+message: "If you use this work, please cite it as follows."
+type: software
 title: "VeCT: Secure and Efficient Constant-Time Code Rewriting with Vector Extensions"
-type: conference-paper
-year: 2026
-month: 8
-collection-title: "35th USENIX Security Symposium (USENIX Security 26)"
-conference:
-  name: "35th USENIX Security Symposium (USENIX Security 26)"
-  city: "Baltimore"
-  region: "MD"
-  country: "US"
-publisher:
-  name: "USENIX Association"
-isbn: "978-1-939133-58-8"
-start: 5113
-end: 5132
-url: "https://www.usenix.org/conference/usenixsecurity26/presentation/jiang-qisheng"
+authors:
+  - family-names: Jiang
+    given-names: Qisheng
+  - family-names: Zhang
+    given-names: Danfeng
+preferred-citation:
+  type: conference-paper
+  title: "VeCT: Secure and Efficient Constant-Time Code Rewriting with Vector Extensions"
+  authors:
+    - family-names: Jiang
+      given-names: Qisheng
+    - family-names: Zhang
+      given-names: Danfeng
+  conference:
+    name: "35th USENIX Security Symposium (USENIX Security 26)"
+  collection-title: "35th USENIX Security Symposium (USENIX Security 26)"
+  publisher:
+    name: "USENIX Association"
+  year: 2026
+  month: 8
+  start: "5113"
+  end: "5132"
+  isbn: "978-1-939133-58-8"
+  url: "https://www.usenix.org/conference/usenixsecurity26/presentation/jiang-qisheng"
